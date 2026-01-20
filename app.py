@@ -1,13 +1,12 @@
 import streamlit as st
 import time
 import random
-from PIL import Image
 
 # ==========================================
 # 1. SETUP & LIBRARY
 # ==========================================
 st.set_page_config(
-    page_title="Social Video Gen v2.2 (I2V Support)",
+    page_title="Social Video Gen v2.3",
     page_icon="🎬",
     layout="wide"
 )
@@ -22,7 +21,6 @@ st.markdown("""
     .i2v-badge {background-color: #e3f2fd; padding: 5px; border-radius: 4px; font-weight: bold; color: #1565c0; font-size: 12px; margin-bottom: 10px; display: inline-block;}
     .affiliate-badge {background-color: #fff9c4; padding: 5px; border-radius: 4px; font-weight: bold; color: #fbc02d; font-size: 12px;}
     .char-count {font-size: 11px; color: #666; font-family: monospace; margin-bottom: 15px;}
-    .uploaded-img-container {border: 2px dashed #ccc; padding: 10px; border-radius: 8px; text-align: center;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -36,7 +34,6 @@ except ImportError:
 # ==========================================
 # 2. FUNGSI UTILITIES
 # ==========================================
-# (Fungsi clean_keys dan check_key_health SAMA seperti versi sebelumnya, disingkat agar tidak kepanjangan)
 def clean_keys(raw_text):
     if not raw_text: return []
     candidates = raw_text.replace('\n', ',').split(',')
@@ -108,27 +105,24 @@ def get_negative(platform):
     else: return NEG_KLING
 
 # ==========================================
-# 5. UI GENERATOR
+# 5. UI GENERATOR (UPDATED POSITION)
 # ==========================================
-st.title("🎬 Social Video Gen v2.2")
+st.title("🎬 Social Video Gen v2.3")
 st.caption("Support: Text-to-Video & Image-to-Video (I2V)")
 
+# 1. Image Uploader (POSISI PALING ATAS & MENCOLOK)
+with st.container():
+    st.info("🖼️ **Image Reference (Opsional)**: Upload gambar di bawah ini jika ingin mode Image-to-Video.")
+    uploaded_file = st.file_uploader("Klik 'Browse files' untuk upload gambar referensi:", type=["jpg", "png", "jpeg", "webp"])
+    if uploaded_file:
+        st.success("✅ Gambar Terdeteksi! Prompt akan disesuaikan untuk Gerakan (Motion).")
+
+st.markdown("---")
+
+# 2. Platform Selector
 video_platform = st.radio("🎥 Target Platform:", ["Kling AI", "Google Veo (VideoFX)", "Luma Dream Machine"], horizontal=True)
 
-# --- NEW: IMAGE UPLOADER SECTION ---
-st.markdown("---")
-st.markdown("### 🖼️ Image Reference (Opsional)")
-st.caption("Upload gambar untuk mode Image-to-Video di Kling/Luma. AI akan fokus pada gerakan.")
-uploaded_file = st.file_uploader("", type=["jpg", "png", "jpeg", "webp"])
-
-if uploaded_file is not None:
-    with st.expander("Lihat Gambar Referensi", expanded=True):
-        st.image(uploaded_file, width=250)
-        st.info("✅ Mode I2V Aktif. Prompt akan dioptimalkan untuk gambar ini.")
-
-st.markdown("---")
-# ------------------------------------
-
+# 3. Tabs
 tab1, tab2 = st.tabs(["🎬 Creative / Cinematic", "🛒 Affiliate / Produk"])
 
 with tab1:
